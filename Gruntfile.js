@@ -297,6 +297,7 @@ module.exports = function (grunt) {
     // },
 
     imagemin: {
+      options: { cache: false },
       dist: {
         files: [{
           expand: true,
