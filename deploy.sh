@@ -98,12 +98,15 @@ selectNodeVersion () {
 # Deployment
 # ----------
 
-echo Handling node.js deployment.
-
+echo ###############################################
+echo Selecting node version
 # 1. Select node version
 selectNodeVersion
 
+
 # 2. Install npm packages
+echo ###############################################
+echo Installing NPM packages
 if [ -e "$DEPLOYMENT_SOURCE/package.json" ]; then
   cd "$DEPLOYMENT_SOURCE"
   eval $NPM_CMD install
@@ -112,6 +115,8 @@ if [ -e "$DEPLOYMENT_SOURCE/package.json" ]; then
 fi
 
 # 3. Install Bower modules
+echo ###############################################
+echo Installing Bower packages
 if [ -e "$DEPLOYMENT_SOURCE/bower.json" ]; then
   cd "$DEPLOYMENT_SOURCE"
   eval ./node_modules/.bin/bower install
@@ -120,14 +125,18 @@ if [ -e "$DEPLOYMENT_SOURCE/bower.json" ]; then
 fi
 
 # 4. Run Grunt Task
+echo ###############################################
+echo Running grunt build
 if [ -e "$DEPLOYMENT_SOURCE/Gruntfile.js" ]; then
   cd "$DEPLOYMENT_SOURCE"
   eval ./node_modules/.bin/grunt build
-  exitWithMessageOnError "gulp failed"
+  exitWithMessageOnError "grunt failed"
   cd - > /dev/null
 fi
 
 # 5. KuduSync
+echo ###############################################
+echo Syncing files
 if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
   "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE/dist" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
   exitWithMessageOnError "Kudu Sync failed"
